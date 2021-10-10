@@ -1,2 +1,1 @@
-# RS2021 Template
-
+dépôt-template pour le projet RS 2021
