@@ -7,9 +7,9 @@
 #include <sys/wait.h>
 
 
-
 int main(int argc, char const *argv[])
 {
+    
     while(1 == 1){
 
         char commande[200];
@@ -21,32 +21,28 @@ int main(int argc, char const *argv[])
         int i =0;
         
         while(strtoken != NULL){
-            args[i] = strdup(strtoken);
+            args[i] = strtoken;
             strtoken = strtok(NULL,sep);
             i++;
         } 
-        args[i+1] = NULL;
-
+        
+        args[i] = NULL;
         
         if(i <1 ){
             printf("Il manque au moins 1 argument\n");
             exit(1);
         }
-        else if(fork() == 0){
+        if(fork() == 0){
             execvp(args[0],args);
             perror("Erreur");
             exit(0);
         }
         else{
-            wait(NULL);
+           wait(NULL);
         }
-        
-        
-        for(int j=0;j<i;j++){
-            free(args[j]);
-        }
-
+              
     }
-
+    
     return 0;
 }
+
