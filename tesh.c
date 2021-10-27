@@ -6,21 +6,23 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-
 int main(int argc, char const *argv[])
 {
-    
-    while(1 == 1){
+    char entree[200];
+    char commande[200];
 
-        char commande[200];
-        fgets(commande,200,stdin);
-        const char *sep = " \n"; 
+    while(1 == 1 && fgets(entree,200,stdin) != NULL){
+
+        sscanf(entree,"%[^\n]",commande);
+        //fgets(commande,200,stdin);
+        const char *sep = " "; 
         char *args[20];
         
-        char *strtoken = strtok(commande,sep);
+        char *strtoken = strtok(commande,sep);  
         int i =0;
         
         while(strtoken != NULL){
+            //printf("%s\n\n",strtoken);
             args[i] = strtoken;
             strtoken = strtok(NULL,sep);
             i++;
