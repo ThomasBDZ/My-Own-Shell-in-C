@@ -15,21 +15,20 @@ int main(int argc, char const *argv[])
 {
 
     char username[MAX_USERID_LENGTH];
-    char hostname[MAX_USERID_LENGTH];
-    char repcourant[MAX_CurrentDir_LENGTH];
-    cuserid(username);
-    /*getlogin_r(username, MAX_USERID_LENGTH);*/
-    gethostname(hostname, MAX_HOSTNAMEID_LENGTH);
-    getcwd(repcourant,MAX_CurrentDir_LENGTH);
+        char hostname[MAX_USERID_LENGTH];
+        char repcourant[MAX_CurrentDir_LENGTH];
+        cuserid(username);
+        /*getlogin_r(username, MAX_USERID_LENGTH);*/
+        gethostname(hostname, MAX_HOSTNAMEID_LENGTH);
+        getcwd(repcourant,MAX_CurrentDir_LENGTH);
 
     char entree[200];
     char commande[200];
 
-    printf("\n%s@%s:%s$",username,hostname,repcourant);
+    printf("\n%s@%s:%s$ ",username,hostname,repcourant);
 
     while(1 && fgets(entree,200,stdin) != NULL){
 
-        printf("\n%s@%s:%s$",username,hostname,repcourant);
         sscanf(entree,"%[^\n]",commande);
         //fgets(commande,200,stdin);
         const char *sep = " "; 
@@ -51,14 +50,31 @@ int main(int argc, char const *argv[])
             printf("Il manque au moins 1 argument\n");
             exit(1);
         }
-        if(fork() == 0){
+        if(strcmp(args[0],"cd")==0){
+            
+            int r = chdir(args[1]);
+            if(r == -1){
+            perror("Error");
+            }
+        }
+        else if(fork() == 0){
             execvp(args[0],args);
             perror("Erreur");
             exit(0);
         }
         else{
            wait(NULL);
+
         }
+
+        char username[MAX_USERID_LENGTH];
+        char hostname[MAX_USERID_LENGTH];
+        char repcourant[MAX_CurrentDir_LENGTH];
+        cuserid(username);
+        /*getlogin_r(username, MAX_USERID_LENGTH);*/
+        gethostname(hostname, MAX_HOSTNAMEID_LENGTH);
+        getcwd(repcourant,MAX_CurrentDir_LENGTH);
+        printf("\n%s@%s:%s$ ",username,hostname,repcourant);
               
     }
     
