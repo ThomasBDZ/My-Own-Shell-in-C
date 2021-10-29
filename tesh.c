@@ -7,13 +7,29 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#define MAX_USERID_LENGTH 32
+#define MAX_HOSTNAMEID_LENGTH 256
+#define MAX_CurrentDir_LENGTH 256
+
 int main(int argc, char const *argv[])
 {
+
+    char username[MAX_USERID_LENGTH];
+    char hostname[MAX_USERID_LENGTH];
+    char repcourant[MAX_CurrentDir_LENGTH];
+    cuserid(username);
+    /*getlogin_r(username, MAX_USERID_LENGTH);*/
+    gethostname(hostname, MAX_HOSTNAMEID_LENGTH);
+    getcwd(repcourant,MAX_CurrentDir_LENGTH);
+
     char entree[200];
     char commande[200];
 
-    while(1 == 1 && fgets(entree,200,stdin) != NULL){
+    printf("\n%s@%s:%s$",username,hostname,repcourant);
 
+    while(1 && fgets(entree,200,stdin) != NULL){
+
+        printf("\n%s@%s:%s$",username,hostname,repcourant);
         sscanf(entree,"%[^\n]",commande);
         //fgets(commande,200,stdin);
         const char *sep = " "; 
