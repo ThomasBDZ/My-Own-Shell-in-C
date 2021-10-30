@@ -75,41 +75,46 @@ int main(int argc, char const *argv[])
                             perror ("erreur d'allocation");
                             return EXIT_FAILURE;
                         }
-                } 
+                }
+            }
+    }
 /* lecture du tableau */
-      for (i = 0; i < n; i++)
-      {
+    for (i = 0; i < n; i++)
+        {
         if (buff[i] != NULL)
-            if(numero_cmd <1 ){
-            printf("Il manque au moins 1 argument\n");
-            exit(1);
+            {
+                if(numero_cmd <1 )
+                    {
+                    printf("Il manque au moins 1 argument\n");
+                    exit(1);
+                    }
+                if(fork() == 0)
+                {
+                    execvp(&buff[i][0],&buff[i]);
+                    perror("Erreur");
+                    exit(0);
+                }
+                else
+                {
+                    wait(NULL);
+                }
+            }
         }
-        if(fork() == 0){
-            execvp(&buff[i][0],&buff[i]);
-            perror("Erreur");
-            exit(0);
-        }
-        else{
-           wait(NULL);
-        }
-      }
         
             //libération des chaines de caractères et du tableau de pointeurs
-      for (i = 0; i < n; i++)
-      {
+    for (i = 0; i < n; i++)
+        {
          if (buff[i] != NULL)
             free (buff[i]);
-      }
-      if (buff != NULL)
-         free (buff);
-   }
-   else
-   {
+        } 
+    if (buff != NULL) free (buff);
+   
+    else
+    {
       perror ("erreur d'allocation");
       return EXIT_FAILURE;
-   }
-}
-     return 0;
-
     }
+return 0;
+
+}
 
