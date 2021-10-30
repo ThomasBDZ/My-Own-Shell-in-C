@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
         sscanf(entree,"%[^\n]",commande);
         //fgets(commande,200,stdin);
         const char *sep = " "; 
-        char *args;
+        char *args[20];
         int numero_cmd = 0;
         
         char *strtoken = strtok(commande,sep);  
@@ -43,7 +43,9 @@ int main(int argc, char const *argv[])
 
         char ** buff = NULL;
         int i = 0, n = MAX_NB_COMMAND ;
-        buff = /*(char **)*/ malloc(n * sizeof(*buff) ); //On alloue MAX 5 lignes pour contenir max 5 commandes
+
+        buff = /*(char **)*/ malloc(n * sizeof(*buff) ); //On alloue MAX n lignes pour contenir max n commandes
+            
             if (buff != NULL)
             {
                 for (i=0; i<n; i++) 
@@ -58,9 +60,9 @@ int main(int argc, char const *argv[])
                         int j = 0;
                         char *s;
 
-                        while((strtoken != NULL) || (strcmp(&args[j],";" ))){
+                        while((strtoken != NULL) || (strcmp(args[j],";" ))){
                             //printf("%s\n\n",strtoken);
-                            args[j] = *strtoken;
+                            args[j] = strtoken;
                             strtoken = strtok(NULL,sep);
                             j++;
                         } 
@@ -77,7 +79,7 @@ int main(int argc, char const *argv[])
                         }
                 }
             }
-    }
+        
 /* lecture du tableau */
     for (i = 0; i < n; i++)
         {
@@ -113,6 +115,7 @@ int main(int argc, char const *argv[])
     {
       perror ("erreur d'allocation");
       return EXIT_FAILURE;
+    }
     }
 return 0;
 
