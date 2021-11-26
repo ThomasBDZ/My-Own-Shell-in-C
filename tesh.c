@@ -39,28 +39,42 @@ int executeCMD(char **cmdArgs, int i){
     return status;
 }
 
-void afficherPrompt(){
-    char username[MAX_USERID_LENGTH];
-    char hostname[MAX_USERID_LENGTH];
-    char repcourant[MAX_CurrentDir_LENGTH];
-    cuserid(username);
-    /*getlogin_r(username, MAX_USERID_LENGTH);*/
-    gethostname(hostname, MAX_HOSTNAMEID_LENGTH);
-    getcwd(repcourant,MAX_CurrentDir_LENGTH);
-    printf("%s@%s:%s$ ",username,hostname,repcourant);
-
+void afficherPrompt(int mode){
+    if(mode == 0){
+        char username[MAX_USERID_LENGTH];
+        char hostname[MAX_USERID_LENGTH];
+        char repcourant[MAX_CurrentDir_LENGTH];
+        cuserid(username);
+        /*getlogin_r(username, MAX_USERID_LENGTH);*/
+        gethostname(hostname, MAX_HOSTNAMEID_LENGTH);
+        getcwd(repcourant,MAX_CurrentDir_LENGTH);
+        printf("%s@%s:%s$ ",username,hostname,repcourant);
+        
+    }
+    
 }
 
 int main(int argc, char const *argv[])
 {
+    FILE* desc = stdin;
     
-    char entree[200];
-    char commande[200];
+    int mode = 0;
+    if(argc > 1){
+        mode = 1;
+        char* filename = argv[1];
+        desc = fopen(filename,"r");
+          
+    }
 
-    afficherPrompt();
+    char entree[1000];
+    char commande[1000];
 
-    while(1 == 1 && fgets(entree,200,stdin) != NULL){
+    afficherPrompt(mode);
 
+
+    while(fgets(entree,1000,desc) != NULL){
+
+        
         sscanf(entree,"%[^\n]",commande);
         
         const char *sep = " "; 
@@ -129,8 +143,12 @@ int main(int argc, char const *argv[])
             executeCMD(args,i);
         }
 
-        afficherPrompt();
+        afficherPrompt(mode);
               
-    }   
+    }
+    if(argc > 1){
+        fclose(desc);
+    }
+
     return 0;
 }
