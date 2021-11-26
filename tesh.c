@@ -65,6 +65,9 @@ int main(int argc, char const *argv[])
         desc = fopen(filename,"r");
           
     }
+    if(!isatty(0)){
+        mode = 1;
+    }
 
     char entree[1000];
     char commande[1000];
