@@ -58,21 +58,32 @@ int main(int argc, char const *argv[])
 {
     FILE* desc = stdin;
     
-    int mode = 0;
+    int modeNI = 0;
+    int modeE = 0;
+
     if(argc > 1){
-        mode = 1;
-        char* filename = argv[1];
-        desc = fopen(filename,"r");
-          
+        int j = 1;
+        while(argv[j] != NULL){
+            if(strcmp(argv[j],"-e") == 0){
+                modeE = 1;
+
+            }else{
+                modeNI = 1;
+                char* filename = argv[j];        
+                desc = fopen(filename,"r");
+            }
+            j = j+1;
+        }     
     }
+
     if(!isatty(0)){
-        mode = 1;
+        modeNI = 1;
     }
 
     char entree[1000];
     char commande[1000];
 
-    afficherPrompt(mode);
+    afficherPrompt(modeNI);
 
 
     while(fgets(entree,1000,desc) != NULL){
@@ -95,7 +106,7 @@ int main(int argc, char const *argv[])
                 
             }else if(strcmp(strtoken,";") == 0){
                 if(retour == 0){
-                    executeCMD(args,i);
+                    retour = executeCMD(args,i);
                 }
                 int j =0;
                 while(args[j+1] != NULL){
@@ -103,7 +114,12 @@ int main(int argc, char const *argv[])
                     j++;
                 }
                 i = 0;
-                retour = 0;
+
+                if(modeE == 1 && retour !=0){
+                    break;
+                }else{
+                    retour = 0;
+                }
 
             }else if(strcmp(strtoken,"&&") == 0){
                 
@@ -116,9 +132,10 @@ int main(int argc, char const *argv[])
                     j++;
                 }
                 i = 0;
-                /*if (retour != 0){
+
+                if (modeE == 1 && retour != 0){
                     break;
-                }*/
+                }
 
             }else if(strcmp(strtoken,"||") == 0){
                 if(retour == 0){
@@ -133,8 +150,13 @@ int main(int argc, char const *argv[])
                 
                 if (retour == 0){
                     retour = -1;
+                    
                 }else{
-                    retour = 0;
+                    if(modeE == 1){
+                        break;
+                    }else{
+                        retour = 0;
+                    }
                 }
             }
 
@@ -142,11 +164,17 @@ int main(int argc, char const *argv[])
             strtoken = strtok(NULL,sep);
 
         } 
-        if(retour == 0 ){
-            executeCMD(args,i);
+        if(modeE == 1 && retour != 0){
+            break;
+        }
+        else if(retour == 0 ){
+            retour = executeCMD(args,i);
+            if(modeE == 1 && retour != 0 ){
+                break;
+            }
         }
 
-        afficherPrompt(mode);
+        afficherPrompt(modeNI);
               
     }
     if(argc > 1){
