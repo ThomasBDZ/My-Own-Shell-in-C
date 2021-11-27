@@ -10,7 +10,7 @@
 #define MAX_HOSTNAMEID_LENGTH 256
 #define MAX_CurrentDir_LENGTH 256
 
-int executeCMD(char **cmdArgs, int i){
+int executeCMD(char **cmdArgs, int i,int bg){
 
     int status;
 
@@ -25,15 +25,35 @@ int executeCMD(char **cmdArgs, int i){
             if(status == -1){
             perror("Error");
             }
+        }else if(strcmp(cmdArgs[0],"fg")==0){
+            if(i == 1){
+                int fils = wait(&status);
+                printf("[%d->%d]\n",fils,status);
+            }else if(i == 2){
+                int fils = atoi(cmdArgs[1]);
+                waitpid(fils,&status,0);
+                printf("[%d->%d]\n",fils,status);
+
+            }else{
+                printf("Trop d'arguments");
+                exit(1);
+            }
         }
-        else if(fork() == 0){
-            execvp(cmdArgs[0],cmdArgs);
-            perror("Error");
-            exit(0);
-        }
+        
         else{
-           wait(&status);
-           
+            pid_t fils = fork();
+            if(fils == 0){
+                execvp(cmdArgs[0],cmdArgs);
+                perror("Error");
+                exit(0);
+            }else{
+                if(bg == 1){
+                    printf("[%d]\n",fils);
+                }else{
+                    wait(&status);
+                }
+            }
+
         }
     
     return status;
@@ -61,13 +81,16 @@ int main(int argc, char const *argv[])
     int modeNI = 0;
     int modeE = 0;
 
+// On parcours les options s'il y en a
     if(argc > 1){
         int j = 1;
         while(argv[j] != NULL){
+            // Cas ou l'option -e est détectée
             if(strcmp(argv[j],"-e") == 0){
                 modeE = 1;
 
             }else{
+            // Sinon on considère que c'est un fichier contenant des commandes
                 modeNI = 1;
                 char* filename = argv[j];        
                 desc = fopen(filename,"r");
@@ -100,13 +123,13 @@ int main(int argc, char const *argv[])
         int retour = 0;
         while(strtoken != NULL){
 
-            if(strcmp(strtoken,";") != 0 && strcmp(strtoken,"&&") != 0 && strcmp(strtoken,"||") != 0){
+            if(strcmp(strtoken,";") != 0 && strcmp(strtoken,"&&") != 0 && strcmp(strtoken,"||") != 0 && strcmp(strtoken,"&") != 0){
                 args[i] = strtoken;
                 i++;
                 
             }else if(strcmp(strtoken,";") == 0){
                 if(retour == 0){
-                    retour = executeCMD(args,i);
+                    retour = executeCMD(args,i,0);
                 }
                 int j =0;
                 while(args[j+1] != NULL){
@@ -124,7 +147,7 @@ int main(int argc, char const *argv[])
             }else if(strcmp(strtoken,"&&") == 0){
                 
                 if(retour == 0){
-                    retour = executeCMD(args,i);
+                    retour = executeCMD(args,i,0);
                 }
                 int j =0;
                 while(args[j+1] != NULL){
@@ -139,7 +162,7 @@ int main(int argc, char const *argv[])
 
             }else if(strcmp(strtoken,"||") == 0){
                 if(retour == 0){
-                    retour = executeCMD(args,i);
+                    retour = executeCMD(args,i,0);
                 }
                 int j =0;
                 while(args[j+1] != NULL){
@@ -158,17 +181,34 @@ int main(int argc, char const *argv[])
                         retour = 0;
                     }
                 }
+            }else if(strcmp(strtoken,"&") == 0){
+                
+                if(retour == 0){
+                    executeCMD(args,i,1);
+                }
+                int j =0;
+                while(args[j+1] != NULL){
+                    args[j] = NULL;
+                    j++;
+                }
+                i = 0;
+                retour = 0;
+
             }
 
 
             strtoken = strtok(NULL,sep);
 
-        } 
+        }
+
+        // Si le mode avec erreur est activé et qu'on a un code retour différent de 0, on arrête le tesh 
         if(modeE == 1 && retour != 0){
             break;
         }
-        else if(retour == 0 ){
-            retour = executeCMD(args,i);
+        // On execute la dernière commande entrée
+        else if(retour == 0 && i>0){
+            retour = executeCMD(args,i,0);
+            // Si le mode erreur est activé, on arrête le tesh si le code retour est différent de 0
             if(modeE == 1 && retour != 0 ){
                 break;
             }
