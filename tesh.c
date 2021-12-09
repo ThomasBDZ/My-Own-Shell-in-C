@@ -5,8 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+
 
 #define MAX_USERID_LENGTH 32
 #define MAX_HOSTNAMEID_LENGTH 256
@@ -125,7 +124,7 @@ int main(int argc, char const *argv[])
         int retour = 0;
         while(strtoken != NULL){
 
-            if(strcmp(strtoken,";") != 0 && strcmp(strtoken,"&&") != 0 && strcmp(strtoken,"||") != 0 && strcmp(strtoken,"&") != 0){
+            if(strcmp(strtoken,";") != 0 && strcmp(strtoken,"&&") != 0 && strcmp(strtoken,"||") != 0 && strcmp(strtoken,"&") != 0 && strcmp(strtoken,">") != 0 && strcmp(strtoken,">>") != 0 && strcmp(strtoken,"|") != 0 && strcmp(strtoken,"<") != 0){
                 args[i] = strtoken;
                 i++;
                 
@@ -196,8 +195,54 @@ int main(int argc, char const *argv[])
                 i = 0;
                 retour = 0;
 
-            }
+            }else if(strcmp(strtoken,">") == 0 || strcmp(strtoken,">>") == 0){
+                
+                if(retour == 0){
+                    
+                    char* fdname = strtok(NULL,sep);
 
+                    if(fdname != NULL){
+                        int fd = 0;
+
+                        if(strcmp(strtoken,">") == 0){
+                            fd = open(fdname,O_WRONLY|O_CREAT|O_TRUNC, 0666);
+                        }else{
+                            fd = open(fdname,O_WRONLY|O_CREAT|O_APPEND, 0666);
+                        }
+
+                        if(fork() == 0){
+                            close(1);
+                            dup2(fd,1);
+                            int r = executeCMD(args,i,0);
+                            exit(r);
+
+                        }else{
+                            int status;
+                            close(fd);
+                            wait(&status);
+                            retour = status;
+                            
+                        }
+
+                    }else{
+                        printf("Veuillez entrer un nom de fichier valide \n");
+                    }
+                }
+
+                int j =0;
+                while(args[j+1] != NULL){
+                    args[j] = NULL;
+                    j++;
+                }
+                i = 0;
+
+                if(modeE == 1 && retour !=0){
+                    break;
+                }else{
+                    retour = 0;
+                }
+            }
+            
 
             strtoken = strtok(NULL,sep);
 
