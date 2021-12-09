@@ -5,6 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #define MAX_USERID_LENGTH 32
 #define MAX_HOSTNAMEID_LENGTH 256
