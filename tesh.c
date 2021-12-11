@@ -219,8 +219,8 @@ int main(int argc, char const *argv[])
                                 close(0);
                                 dup2(fd,0);
                             }
-                            
-                            //retour = executeCMD(args,i,0);
+                            close(fd);
+                            retour = executeCMD(args,i,0);
                             
                             exit(retour);
 
