@@ -146,7 +146,6 @@ int main(int argc, char const *argv[])
                 }
 
             }else if(strcmp(strtoken,"&&") == 0){
-                
                 if(retour == 0){
                     retour = executeCMD(args,i,0);
                 }
@@ -195,7 +194,7 @@ int main(int argc, char const *argv[])
                 i = 0;
                 retour = 0;
 
-            }else if(strcmp(strtoken,">") == 0 || strcmp(strtoken,">>") == 0){
+            }else if(strcmp(strtoken,">") == 0 || strcmp(strtoken,">>") == 0 || strcmp(strtoken,"<") == 0){
                 
                 if(retour == 0){
                     
@@ -211,7 +210,8 @@ int main(int argc, char const *argv[])
                             fd = open(fdname,O_RDONLY, 0666);
                         }
 
-                        if(fork() == 0){
+                        pid_t f = fork();
+                        if(f == 0){
                             if(strcmp(strtoken,">") == 0 || strcmp(strtoken,">>") == 0){
                                 close(1);
                                 dup2(fd,1);
@@ -219,15 +219,17 @@ int main(int argc, char const *argv[])
                                 close(0);
                                 dup2(fd,0);
                             }
-                            int r = executeCMD(args,i,0);
-                            exit(r);
+                            
+                            retour = executeCMD(args,i,0);
+                            
+                            exit(retour);
 
                         }else{
                             int status;
                             close(fd);
-                            wait(&status);
+                            waitpid(f,&status,0);
                             retour = status;
-                            
+                        
                         }
 
                     }else{
@@ -242,10 +244,34 @@ int main(int argc, char const *argv[])
                 }
                 i = 0;
 
-                if(modeE == 1 && retour !=0){
-                    break;
-                }else{
-                    retour = 0;
+                strtoken = strtok(NULL,sep);
+                if(strtoken != NULL){
+                    if(strcmp(strtoken,";") == 0){
+                        if(modeE == 1 && retour !=0){
+                            break;
+                        }else{
+                        retour = 0;
+                    }
+
+                    }
+                    else if(strcmp(strtoken,"&&") == 0){
+                        printf("ET : %d",retour);
+                        if(modeE == 1 && retour !=0){
+                            break;
+                        }
+                    }else if(strcmp(strtoken,"||") == 0){
+                        if (retour == 0){
+                            retour = -1;
+                    
+                        }else{
+                            if(modeE == 1){
+                                break;
+                            }else{
+                                retour = 0;
+                            }   
+                        }
+                        
+                    }
                 }
             }
                 
