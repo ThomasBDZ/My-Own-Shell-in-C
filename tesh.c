@@ -213,12 +213,12 @@ int main(int argc, char const *argv[])
                         pid_t f = fork();
                         if(f == 0){
                             if(strcmp(strtoken,">") == 0 || strcmp(strtoken,">>") == 0){
-                                //close(1);
-                                //dup2(1,fd);
+                                close(1);
+                                dup2(fd,1);
                                 
                             }else{
-                                close(0);
-                                dup2(0,fd);
+                                //close(0);
+                                //dup2(0,fd);
                                 
                             }
                             
