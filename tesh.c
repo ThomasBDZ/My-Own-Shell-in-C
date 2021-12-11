@@ -200,19 +200,25 @@ int main(int argc, char const *argv[])
                 if(retour == 0){
                     
                     char* fdname = strtok(NULL,sep);
-
                     if(fdname != NULL){
                         int fd = 0;
 
                         if(strcmp(strtoken,">") == 0){
                             fd = open(fdname,O_WRONLY|O_CREAT|O_TRUNC, 0666);
-                        }else{
+                        }else if(strcmp(strtoken,">>") == 0){
                             fd = open(fdname,O_WRONLY|O_CREAT|O_APPEND, 0666);
+                        }else{
+                            fd = open(fdname,O_RDONLY, 0666);
                         }
 
                         if(fork() == 0){
-                            close(1);
-                            dup2(fd,1);
+                            if(strcmp(strtoken,">") == 0 || strcmp(strtoken,">>") == 0){
+                                close(1);
+                                dup2(fd,1);
+                            }else{
+                                close(0);
+                                dup2(fd,0);
+                            }
                             int r = executeCMD(args,i,0);
                             exit(r);
 
@@ -242,7 +248,7 @@ int main(int argc, char const *argv[])
                     retour = 0;
                 }
             }
-            
+                
 
             strtoken = strtok(NULL,sep);
 
