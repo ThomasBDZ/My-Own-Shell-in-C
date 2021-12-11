@@ -202,16 +202,22 @@ int main(int argc, char const *argv[])
                     if(fdname != NULL){
                         int fd = 0;
 
-                        
+                        if(strcmp(strtoken,">") == 0){
+                            fd = open(fdname,O_WRONLY|O_CREAT|O_TRUNC, 0666);
+                        }else if(strcmp(strtoken,">>") == 0){
+                            fd = open(fdname,O_WRONLY|O_CREAT|O_APPEND, 0666);
+                        }else{
+                            fd = open(fdname,O_RDONLY, 0666);
+                        }
 
                         pid_t f = fork();
                         if(f == 0){
                             if(strcmp(strtoken,">") == 0 || strcmp(strtoken,">>") == 0){
-                                close(1);
-                                dup2(fd,1);
+                                //close(1);
+                                //dup2(fd,1);
                             }else{
-                                close(0);
-                                dup2(fd,0);
+                                //close(0);
+                                //dup2(fd,0);
                             }
                             
                             retour = executeCMD(args,i,0);
