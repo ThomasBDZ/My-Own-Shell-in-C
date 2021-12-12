@@ -213,11 +213,11 @@ int main(int argc, char const *argv[])
                         pid_t f = fork();
                         if(f == 0){
                             if(strcmp(strtoken,">") == 0 || strcmp(strtoken,">>") == 0){
-                                close(1);
                                 dup2(fd,1);
+                                close(fd);
                             }else{
-                                close(0);
-                                dup2(fd,0);
+                                dup2(fd,fileno(desc));
+                                close(fd);
                             }
                             
                             retour = executeCMD(args,i,0);
