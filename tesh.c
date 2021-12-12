@@ -5,9 +5,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-
 
 
 #define MAX_USERID_LENGTH 32
@@ -127,38 +124,10 @@ int main(int argc, char const *argv[])
         int retour = 0;
         while(strtoken != NULL){
 
-            if(strcmp(strtoken,";") != 0 && strcmp(strtoken,"&&") != 0 && strcmp(strtoken,"||") != 0 && strcmp(strtoken,"&") != 0 && strcmp(strtoken,">") != 0 && strcmp(strtoken,">>") != 0 && strcmp(strtoken,"|") != 0 && strcmp(strtoken,"<") != 0  && strcmp(strtoken,"-r")!= 0){
+            if(strcmp(strtoken,";") != 0 && strcmp(strtoken,"&&") != 0 && strcmp(strtoken,"||") != 0 && strcmp(strtoken,"&") != 0 && strcmp(strtoken,">") != 0 && strcmp(strtoken,">>") != 0 && strcmp(strtoken,"|") != 0 && strcmp(strtoken,"<") != 0){
                 args[i] = strtoken;
                 i++;
                 
-            }else if(strcmp(strtoken,"-r") == 0){
-
-                unsigned char *command_buf;
-                while(1)
-                {
-                    
-                    command_buf = readline("readline >");
-		            if(strlen(command_buf)>0) { add_history(command_buf); } 
-                    if(!strcmp(command_buf, "ifconfig")) { system("ifconfig"); }
-                    else if(!strcmp(command_buf, "date")) { system("date"); }
-                    else if(!strcmp(command_buf, "ls")) { system("ls"); }
-                    else if(!strcmp(command_buf, "exit") || !strcmp(command_buf, "quit") || !strcmp(command_buf, "e") || !strcmp(command_buf, "q")) { break; }
-                }
-
-                /**char *path = "./usr/lib32";
-                void* readline_handle = dlopen (path, "RTLD_LAZY");
-                if (!readline_handle) {
-                    fprintf(stderr, "%d\n", dlerror());
-                    exit(EXIT_FAILURE);
-                }
-                int readline, add_history;
-                readline = dlsym (readline_handle, "readline");
-                add_history = dlsym(readline_handle, "add_history");
-                //dlclose(readline_handle);**/
-
-
-
-
             }else if(strcmp(strtoken,";") == 0){
                 if(retour == 0){
                     retour = executeCMD(args,i,0);
