@@ -215,6 +215,10 @@ int main(int argc, char const *argv[])
                             if(strcmp(strtoken,">") == 0 || strcmp(strtoken,">>") == 0){
                                 close(1);
                                 dup2(fd,1);
+
+                                retour = executeCMD(args,i,0);
+                            
+                                exit(retour);   
                                 
                             }else{
                                 //close(0);
@@ -222,10 +226,7 @@ int main(int argc, char const *argv[])
                                 
                             }
                             
-                            retour = executeCMD(args,i,0);
-                            
-                            exit(retour);
-
+                        
                         }else{
                             int status;
                             close(fd);
