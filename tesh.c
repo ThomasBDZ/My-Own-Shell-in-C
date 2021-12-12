@@ -95,6 +95,7 @@ int main(int argc, char const *argv[])
                 modeNI = 1;
                 char* filename = argv[j];        
                 desc = fopen(filename,"r");
+                
             }
             j = j+1;
         }     
@@ -213,27 +214,28 @@ int main(int argc, char const *argv[])
                         pid_t f = fork();
                         if(f == 0){
                             if(strcmp(strtoken,">") == 0 || strcmp(strtoken,">>") == 0){
-                                close(1);
+                                //close(1);
                                 dup2(fd,1);
-
+                                close(fd);
                                 retour = executeCMD(args,i,0);
                             
                                 exit(retour);   
                                 
                             }else{
-                                //close(fileno(desc));
-                                //dup2(fd,fileno(desc));
-                                //retour = executeCMD(args,i,0);
-                            
-                                //exit(retour);   
+                                
+                                dup2(fd,fileno(desc));
+                                close(fd);
+                                retour = executeCMD(args,i,0);
+                                exit(retour);   
                                 
                             }
                             
                         
                         }else{
                             int status;
-                            close(fd);
                             waitpid(f,&status,0);
+                            close(fd);
+                            
                             retour = status;
                         
                         }
