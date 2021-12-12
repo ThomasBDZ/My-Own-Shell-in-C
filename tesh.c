@@ -5,6 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 
 #define MAX_USERID_LENGTH 32
@@ -89,6 +91,11 @@ int main(int argc, char const *argv[])
             // Cas ou l'option -e est détectée
             if(strcmp(argv[j],"-e") == 0){
                 modeE = 1;
+
+            // Cas ou l'option readline est détectée
+
+            /**}else if(strcmp(argv[j],"-r") == 0){ 
+                modeE = 2;**/
 
             }else{
             // Sinon on considère que c'est un fichier contenant des commandes
@@ -283,7 +290,21 @@ int main(int argc, char const *argv[])
         // Si le mode avec erreur est activé et qu'on a un code retour différent de 0, on arrête le tesh 
         if(modeE == 1 && retour != 0){
             break;
-        }
+
+
+        }/**else if (modeE == 2){                 //Si le mode avec readline est activé
+            unsigned char *command_buf;
+                while(1)
+                {
+                    
+                    command_buf = readline("readline >");
+		            if(strlen(command_buf)>0) { add_history(command_buf); } 
+                    else if(!strcmp(command_buf, "exit") || !strcmp(command_buf, "quit") || !strcmp(command_buf, "e") || !strcmp(command_buf, "q")) { break; }
+                }
+
+        }**/
+
+        
         // On execute la dernière commande entrée
         else if(retour == 0 && i>0){
             retour = executeCMD(args,i,0);
