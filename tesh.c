@@ -205,7 +205,7 @@ int main(int argc, char const *argv[])
                         if(strcmp(strtoken,">") == 0){
                             fd = open(fdname,O_WRONLY|O_CREAT|O_TRUNC , 0666);
                         }else if(strcmp(strtoken,">>") == 0){
-                            fd = open(fdname,O_WRONLY|O_CREAT|O_APPEND | O_EXCL, 0666);
+                            fd = open(fdname,O_WRONLY|O_CREAT|O_APPEND, 0666);
                         }else{
                             fd = open(fdname,O_RDONLY, 0666);
                         }
@@ -221,8 +221,11 @@ int main(int argc, char const *argv[])
                                 exit(retour);   
                                 
                             }else{
-                                //close(0);
-                                //dup2(0,fd);
+                                //close(fileno(desc));
+                                //dup2(fd,fileno(desc));
+                                //retour = executeCMD(args,i,0);
+                            
+                                //exit(retour);   
                                 
                             }
                             
