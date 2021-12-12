@@ -203,9 +203,9 @@ int main(int argc, char const *argv[])
                         int fd = 0;
 
                         if(strcmp(strtoken,">") == 0){
-                            fd = open(fdname,O_WRONLY|O_CREAT|O_TRUNC, 0666);
+                            fd = open(fdname,O_WRONLY|O_CREAT|O_TRUNC , 0666);
                         }else if(strcmp(strtoken,">>") == 0){
-                            fd = open(fdname,O_WRONLY|O_CREAT|O_APPEND, 0666);
+                            fd = open(fdname,O_WRONLY|O_CREAT|O_APPEND | O_EXCL, 0666);
                         }else{
                             fd = open(fdname,O_RDONLY, 0666);
                         }
@@ -246,35 +246,7 @@ int main(int argc, char const *argv[])
                 }
                 i = 0;
 
-                strtoken = strtok(NULL,sep);
-                if(strtoken != NULL){
-                    if(strcmp(strtoken,";") == 0){
-                        if(modeE == 1 && retour !=0){
-                            break;
-                        }else{
-                        retour = 0;
-                    }
-
-                    }
-                    else if(strcmp(strtoken,"&&") == 0){
-                        printf("ET : %d",retour);
-                        if(modeE == 1 && retour !=0){
-                            break;
-                        }
-                    }else if(strcmp(strtoken,"||") == 0){
-                        if (retour == 0){
-                            retour = -1;
-                    
-                        }else{
-                            if(modeE == 1){
-                                break;
-                            }else{
-                                retour = 0;
-                            }   
-                        }
-                        
-                    }
-                }
+                
             }
                 
 
